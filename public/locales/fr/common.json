@@ -1,0 +1,26 @@
+{
+	"errors": {
+		"400Error": "Bad request",
+		"accessForbidden": "Vous n'avez pas le droit de faire cette action",
+		"alreadyTaken": "Cette valeur est déjà utilisée",
+		"appError": "Erreur de l'application",
+		"notFound": "Non trouvé"
+	},
+	"generics": {
+		"dialogs": {
+			"loadingDialog": {
+				"loading": "Chargement"
+			}
+		}
+	},
+	"notifier": {
+		"error": "Erreur"
+	},
+	"page404": {
+		"text": "La page n'existe pas"
+	},
+	"pageError": {
+		"text": "Une erreur inattendue s'est produite",
+		"title": "Erreur"
+	}
+}

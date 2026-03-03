@@ -1,0 +1,26 @@
+{
+	"errors": {
+		"400Error": "Bad request",
+		"accessForbidden": "You don't have rights to do this action",
+		"alreadyTaken": "This value is already used",
+		"appError": "Application error",
+		"notFound": "Not found"
+	},
+	"generics": {
+		"dialogs": {
+			"loadingDialog": {
+				"loading": "Loading"
+			}
+		}
+	},
+	"notifier": {
+		"error": "Error"
+	},
+	"page404": {
+		"text": "Page does not exist"
+	},
+	"pageError": {
+		"text": "An unexpected error occured",
+		"title": "Error"
+	}
+}
