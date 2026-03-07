@@ -1,4 +1,9 @@
 {
+	"dashboard": {
+		"uploadSection": {
+			"title": "Téléverser un fichier pour l'analyse"
+		}
+	},
 	"errors": {
 		"400Error": "Bad request",
 		"accessForbidden": "Vous n'avez pas le droit de faire cette action",

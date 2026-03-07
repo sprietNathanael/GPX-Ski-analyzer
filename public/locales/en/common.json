@@ -1,4 +1,9 @@
 {
+	"dashboard": {
+		"uploadSection": {
+			"title": "Upload a file to analyze"
+		}
+	},
 	"errors": {
 		"400Error": "Bad request",
 		"accessForbidden": "You don't have rights to do this action",
