@@ -29,7 +29,38 @@ export function MapProvider(props: Readonly<MapContextProps>) {
 		if (map === null && mapContainerRef !== null && mapContainerRef.current) {
 			const newMap = new maplibre.Map({
 				container: mapContainerRef.current,
-				style: 'https://demotiles.maplibre.org/style.json',
+				style: {
+					projection: { type: 'globe' },
+					version: 8,
+					sources: {
+						satellite: {
+							type: 'raster',
+							tiles: [
+								'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+							],
+							tileSize: 256,
+							maxzoom: 19,
+						},
+						terrain: {
+							type: 'raster-dem',
+							tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+							maxzoom: 13,
+							encoding: 'terrarium',
+							attribution: "<a href='https://github.com/tilezen/joerd/tree/master'>Joerd</a>",
+						},
+					},
+					terrain: {
+						source: 'terrain',
+						exaggeration: 1,
+					},
+					layers: [
+						{
+							id: 'satellite',
+							type: 'raster',
+							source: 'satellite',
+						},
+					],
+				},
 				center: [2.35, 48.85],
 				zoom: 5,
 			});
