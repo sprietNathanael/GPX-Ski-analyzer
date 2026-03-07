@@ -1,6 +1,7 @@
-import { Button, Container } from '@mui/material';
+import { Container } from '@mui/material';
+import MapContainer from 'components/Map/MapContainer';
+import { MapProvider } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
-import { Upload } from 'mdi-material-ui';
 import { parseGPX } from 'models/GPX/utils';
 import { ChangeEvent, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
@@ -38,15 +39,20 @@ function DashboardPage() {
 
 	return (
 		<Container maxWidth='xl' sx={{ flexGrow: 1, paddingBottom: '10px', overflow: 'hidden' }}>
-			<Button variant='contained' tabIndex={-1} component='label' role={undefined}>
+			{/* <Button variant='contained' tabIndex={-1} component='label' role={undefined}>
 				<Upload />
 				<input type='file' className={classes.hiddenUploadInput} onChange={fileUploaded} />
-			</Button>
+			</Button> */}
+			<MapContainer />
 		</Container>
 	);
 }
 
-export default DashboardPage;
+export default () => (
+	<MapProvider>
+		<DashboardPage />
+	</MapProvider>
+);
 
 const useStyles = makeStyles()((theme) => ({
 	hiddenUploadInput: {
