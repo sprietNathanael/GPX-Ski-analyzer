@@ -1,3 +1,4 @@
+import { getSpeed } from 'utils/gps';
 import GPX_1_0 from './GPX/1_0';
 import GPX_1_1 from './GPX/1_1';
 import Point, { fromGPX as pointFromGPX } from './Point';
@@ -45,6 +46,10 @@ export async function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
 						let newPoint = await pointFromGPX(point);
 						if (newPoint) {
 							points.push(newPoint);
+							if (points.length > 1) {
+								let speed = getSpeed(points[points.length - 2], points[points.length - 1]);
+								newPoint.computedSpeed = speed;
+							}
 						}
 					}
 					res.push({

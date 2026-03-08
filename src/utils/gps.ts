@@ -1,3 +1,5 @@
+import { Point } from 'models';
+
 const ZOOM = 15;
 const TILE_SIZE = 256;
 
@@ -11,7 +13,6 @@ async function loadTile(z: number, x: number, y: number): Promise<ImageData> {
 	}
 
 	const url = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${key}.png`;
-	console.log(`loading ${url}`);
 
 	const img = new Image();
 	img.crossOrigin = 'anonymous';
@@ -69,4 +70,32 @@ export async function getPointElevation([lon, lat]: [number, number]) {
 	const tile = await loadTile(ZOOM, tileX, tileY);
 
 	return elevationAt(tile.data, pixelX, pixelY);
+}
+
+// Result is in m
+function haversineDistance([lon1, lat1]: [number, number], [lon2, lat2]: [number, number]) {
+	const R = 6371000; // meters
+
+	const toRad = (d: number) => (d * Math.PI) / 180;
+
+	const dLat = toRad(lat2 - lat1);
+	const dLon = toRad(lon2 - lon1);
+
+	const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+	return R * c;
+}
+
+// Result is in m/s
+export function getSpeed(previousPoint: Point, currentPoint: Point) {
+	let distXY = haversineDistance(previousPoint.coords, currentPoint.coords);
+	let distZ =
+		(currentPoint.elevation || currentPoint.computedElevation) -
+		(previousPoint.elevation || previousPoint.computedElevation);
+	let dist3D = Math.sqrt(distXY ** 2 + distZ ** 2);
+	let deltaTime = (currentPoint.time.getTime() - previousPoint.time.getTime()) / 1000; // seconds
+
+	return dist3D / deltaTime;
 }
