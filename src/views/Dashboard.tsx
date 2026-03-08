@@ -1,19 +1,28 @@
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
 import MapContainer from 'components/Map/MapContainer';
-import { MapProvider } from 'context/MapContext';
+import { MapProvider, useMap } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
 import { Upload } from 'mdi-material-ui';
 import { parseGPX } from 'models/GPX/utils';
 import GPSRecord, { fromGPX } from 'models/Record';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 
 function DashboardPage() {
 	const { loadingDialog } = useUtilities();
 	const { t } = useTranslation();
+	const { map } = useMap();
 
 	const [gpsRecord, setGpsRecord] = useState<GPSRecord | undefined>(undefined);
+	const [componentIsInit, setComponentIsInit] = useState(false);
+
+	useEffect(() => {
+		if (map && !componentIsInit && gpsRecord) {
+			setComponentIsInit(true);
+			// computeElevationWithMap(gpsRecord, map);
+		}
+	}, [map, componentIsInit, gpsRecord]);
 
 	async function fileUploaded(event: ChangeEvent<HTMLInputElement>) {
 		if (event.target.files?.length === 1) {
@@ -33,7 +42,7 @@ function DashboardPage() {
 		let fileContent = rawFileContent.target?.result as string;
 		let parsed = parseGPX(fileContent);
 		if (parsed) {
-			let newRecord = fromGPX(parsed);
+			let newRecord = await fromGPX(parsed);
 			setGpsRecord(newRecord);
 		}
 		loadingDialog.close();

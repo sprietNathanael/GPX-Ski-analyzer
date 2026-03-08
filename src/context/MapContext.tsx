@@ -44,7 +44,7 @@ export function MapProvider(props: Readonly<MapContextProps>) {
 						terrain: {
 							type: 'raster-dem',
 							tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-							maxzoom: 13,
+							maxzoom: 15,
 							encoding: 'terrarium',
 							attribution: "<a href='https://github.com/tilezen/joerd/tree/master'>Joerd</a>",
 						},

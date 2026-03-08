@@ -28,7 +28,6 @@ export default function MapContainer(props: ContainerProps) {
 				el[0] + (index === 0 ? -1 : 1) * BOUNDS_OFFSET,
 				el[1] + (index === 0 ? -1 : 1) * BOUNDS_OFFSET,
 			]) as LngLatBoundsLike;
-			console.log(offesetedBounds);
 			map.fitBounds(offesetedBounds);
 			//! Todo : diverse colors for multiple tracks
 			for (let trackIndex = 0; trackIndex < props.gpsRecord.tracks.length; trackIndex++) {
@@ -59,7 +58,7 @@ export default function MapContainer(props: ContainerProps) {
 				});
 			}
 		}
-	}, [map, containerInit]);
+	}, [map, containerInit, props.gpsRecord]);
 
 	return (
 		<Card sx={{ width: '100%', height: '100%' }}>

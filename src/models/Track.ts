@@ -7,24 +7,31 @@ export default interface Track {
 	points: Point[];
 }
 
-export function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
+export async function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
 	let res: Track[] = [];
 
 	if (gpx.wpt) {
-		let points = gpx.wpt.map(pointFromGPX).filter((el) => el !== null);
-		res.push({
-			points,
-		});
+		let points: Point[] = [];
+		for (let point of gpx.wpt) {
+			let newPoint = await pointFromGPX(point);
+			if (newPoint) {
+				points.push(newPoint);
+			}
+		}
+		res.push({ points });
 	}
 
 	if (gpx.rte) {
 		for (let route of gpx.rte) {
 			if (route.rtept) {
-				let points = route.rtept.map(pointFromGPX).filter((el) => el !== null);
-				res.push({
-					name: route.name,
-					points,
-				});
+				let points: Point[] = [];
+				for (let point of route.rtept) {
+					let newPoint = await pointFromGPX(point);
+					if (newPoint) {
+						points.push(newPoint);
+					}
+				}
+				res.push({ points });
 			}
 		}
 	}
@@ -34,14 +41,17 @@ export function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
 			if (track.trkseg) {
 				let points: Point[] = [];
 				for (let segment of track.trkseg) {
-					if (segment.trkpt) {
-						points.push(...segment.trkpt.map(pointFromGPX).filter((el) => el !== null));
+					for (let point of segment.trkpt) {
+						let newPoint = await pointFromGPX(point);
+						if (newPoint) {
+							points.push(newPoint);
+						}
 					}
+					res.push({
+						name: track.name,
+						points,
+					});
 				}
-				res.push({
-					name: track.name,
-					points,
-				});
 			}
 		}
 	}

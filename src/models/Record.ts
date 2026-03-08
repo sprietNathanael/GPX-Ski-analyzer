@@ -8,7 +8,7 @@ export default interface GPSRecord {
 	tracks: Track[];
 }
 
-export function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
+export async function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
 	let res: Partial<GPSRecord> = {};
 	let bound: Bound_1_0 | Bound_1_1 | undefined;
 	if (gpx.version === '1.1') {
@@ -27,7 +27,7 @@ export function fromGPX(gpx: GPX_1_0 | GPX_1_1) {
 		];
 	}
 
-	res.tracks = tracksFromGPX(gpx);
+	res.tracks = await tracksFromGPX(gpx);
 
 	return res as GPSRecord;
 }
