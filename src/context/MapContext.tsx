@@ -1,4 +1,6 @@
 import maplibre from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
 import { createContext, RefObject, useContext, useEffect, useRef, useState } from 'react';
 
 export interface MapContext {
@@ -63,6 +65,7 @@ export function MapProvider(props: Readonly<MapContextProps>) {
 				},
 				center: [2.35, 48.85],
 				zoom: 5,
+				rollEnabled: true,
 			});
 
 			newMap.on('load', () => {

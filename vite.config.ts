@@ -16,8 +16,8 @@ export default defineConfig(({ command }) => {
 						if (id.includes('node_modules')) {
 							if (id.includes('i18n')) {
 								return 'vendor_i18n';
-							} else if (id.includes('mapbox')) {
-								return 'vendor_mapbox';
+							} else if (id.includes('maplibre')) {
+								return 'vendor_maplibre';
 							} else if (id.includes('mdi-material-ui')) {
 								return 'vendor_mdi-material-ui';
 							} else if (id.includes('dayjs')) {

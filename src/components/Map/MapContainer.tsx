@@ -1,6 +1,6 @@
 import { Box, Card, CardContent } from '@mui/material';
 import { useMap } from 'context/MapContext';
-import { LngLatBoundsLike } from 'maplibre-gl';
+import maplibre, { LngLatBoundsLike } from 'maplibre-gl';
 import GPSRecord from 'models/Record';
 import { useEffect, useRef, useState } from 'react';
 
@@ -56,6 +56,14 @@ export default function MapContainer(props: ContainerProps) {
 						'line-width': 1,
 					},
 				});
+				map.addControl(
+					new maplibre.NavigationControl({
+						visualizePitch: true,
+						visualizeRoll: true,
+						showZoom: true,
+						showCompass: true,
+					})
+				);
 			}
 		}
 	}, [map, containerInit, props.gpsRecord]);
