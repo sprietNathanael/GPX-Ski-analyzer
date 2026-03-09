@@ -1,4 +1,5 @@
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
+import { ChartContainer } from 'components/Charts/ChartContainer';
 import MapContainer from 'components/Map/MapContainer';
 import { MapProvider, useMap } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
@@ -51,12 +52,15 @@ function DashboardPage() {
 	const { classes } = useStyles();
 
 	return (
-		<Container maxWidth='xl' sx={{ flexGrow: 1, paddingBottom: '10px', overflow: 'hidden' }}>
+		<Container maxWidth='xl' sx={{ flexGrow: 1, paddingBottom: '10px' }}>
 			<Grid container flexDirection='column' alignItems='center'>
 				{gpsRecord ? (
-					<Box height={'600px'} width={'100%'}>
-						<MapContainer gpsRecord={gpsRecord} />
-					</Box>
+					<>
+						<Box height={'600px'} width={'100%'}>
+							<MapContainer gpsRecord={gpsRecord} />
+						</Box>
+						<ChartContainer gpsRecord={gpsRecord} />
+					</>
 				) : (
 					<Card sx={{ maxWidth: '400px' }}>
 						<CardContent>

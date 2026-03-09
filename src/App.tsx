@@ -32,7 +32,7 @@ export default function App() {
 			<CssBaseline />
 			<GlobalStyles styles={{}} />
 
-			<Grid container spacing={0} flexGrow={1} sx={{ maxHeight: '100%' }} wrap='nowrap'>
+			<Grid container spacing={0} flexGrow={1} wrap='nowrap'>
 				<Grid
 					container
 					direction='column'
