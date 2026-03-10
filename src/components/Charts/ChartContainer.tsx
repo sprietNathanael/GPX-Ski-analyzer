@@ -22,7 +22,7 @@ ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, TimeSc
 
 interface ComponentProps {
 	gpsRecord: GPSRecord;
-	onPointSelected: (pointDate?: Date) => void;
+	onPointSelected: (pointDate?: Point) => void;
 }
 
 function ChartContainer(props: ComponentProps) {
@@ -71,7 +71,7 @@ function ChartContainer(props: ComponentProps) {
 	function selectPoint(index?: number) {
 		if (lastSelectedPointRef.current !== index) {
 			lastSelectedPointRef.current = index;
-			props.onPointSelected(points[index ?? -1]?.time);
+			props.onPointSelected(points[index ?? -1]);
 		}
 	}
 

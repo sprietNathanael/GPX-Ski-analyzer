@@ -4,6 +4,7 @@ import MapContainer from 'components/Map/MapContainer';
 import { MapProvider, useMap } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
 import { Upload } from 'mdi-material-ui';
+import { Point } from 'models';
 import { parseGPX } from 'models/GPX/utils';
 import GPSRecord, { fromGPX } from 'models/Record';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ function DashboardPage() {
 
 	const [gpsRecord, setGpsRecord] = useState<GPSRecord | undefined>(undefined);
 	const [componentIsInit, setComponentIsInit] = useState(false);
-	const [selectedPointFromChart, setSelectedPointFromChart] = useState<Date | undefined>(undefined);
+	const [selectedPointFromChart, setSelectedPointFromChart] = useState<Point | undefined>(undefined);
 
 	useEffect(() => {
 		if (map && !componentIsInit && gpsRecord) {
@@ -56,7 +57,7 @@ function DashboardPage() {
 				{gpsRecord ? (
 					<>
 						<Box height={'600px'} width={'100%'}>
-							<MapContainer gpsRecord={gpsRecord} />
+							<MapContainer gpsRecord={gpsRecord} pointToShow={selectedPointFromChart} />
 						</Box>
 						<ChartContainer gpsRecord={gpsRecord} onPointSelected={setSelectedPointFromChart} />
 					</>

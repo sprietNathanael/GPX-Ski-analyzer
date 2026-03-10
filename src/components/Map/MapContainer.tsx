@@ -1,6 +1,7 @@
 import { Box, Card, CardContent } from '@mui/material';
 import { useMap } from 'context/MapContext';
-import maplibre, { LngLatBoundsLike } from 'maplibre-gl';
+import maplibre, { GeoJSONSource, LngLatBoundsLike } from 'maplibre-gl';
+import { Point } from 'models';
 import GPSRecord from 'models/Record';
 import { useEffect, useRef, useState } from 'react';
 
@@ -8,6 +9,7 @@ const BOUNDS_OFFSET = 0.01;
 
 interface ContainerProps {
 	gpsRecord: GPSRecord;
+	pointToShow?: Point;
 }
 
 export default function MapContainer(props: ContainerProps) {
@@ -64,9 +66,55 @@ export default function MapContainer(props: ContainerProps) {
 						showCompass: true,
 					})
 				);
+
+				map.addSource('pointToShow', {
+					type: 'geojson',
+					data: {
+						type: 'FeatureCollection',
+						features: [],
+					},
+				});
+
+				map.addLayer({
+					id: 'pointToShow',
+					type: 'circle',
+					source: 'pointToShow',
+					paint: {
+						'circle-radius': 6,
+						'circle-color': '#ff0000',
+					},
+				});
 			}
 		}
 	}, [map, containerInit, props.gpsRecord]);
+
+	useEffect(() => {
+		if (map && containerInit) {
+			let source: GeoJSONSource | undefined = map.getSource('pointToShow');
+			if (!source) return;
+
+			if (props.pointToShow) {
+				source.setData({
+					type: 'FeatureCollection',
+					features: [
+						{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: props.pointToShow.coords,
+							},
+							properties: {},
+						},
+					],
+				});
+			} else {
+				source.setData({
+					type: 'FeatureCollection',
+					features: [],
+				});
+			}
+		}
+	}, [props.pointToShow, map, containerInit]);
 
 	return (
 		<Card sx={{ width: '100%', height: '100%' }}>
