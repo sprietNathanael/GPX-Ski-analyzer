@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
-import { ChartContainer } from 'components/Charts/ChartContainer';
+import ChartContainer from 'components/Charts/ChartContainer';
 import MapContainer from 'components/Map/MapContainer';
 import { MapProvider, useMap } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
@@ -17,18 +17,17 @@ function DashboardPage() {
 
 	const [gpsRecord, setGpsRecord] = useState<GPSRecord | undefined>(undefined);
 	const [componentIsInit, setComponentIsInit] = useState(false);
+	const [selectedPointFromChart, setSelectedPointFromChart] = useState<Date | undefined>(undefined);
 
 	useEffect(() => {
 		if (map && !componentIsInit && gpsRecord) {
 			setComponentIsInit(true);
-			// computeElevationWithMap(gpsRecord, map);
 		}
 	}, [map, componentIsInit, gpsRecord]);
 
 	async function fileUploaded(event: ChangeEvent<HTMLInputElement>) {
 		if (event.target.files?.length === 1) {
 			loadingDialog.open();
-			// setFileName(event.target.files[0].name);
 			let reader = new FileReader();
 			reader.onload = (data) => {
 				event.target.value = '';
@@ -59,7 +58,7 @@ function DashboardPage() {
 						<Box height={'600px'} width={'100%'}>
 							<MapContainer gpsRecord={gpsRecord} />
 						</Box>
-						<ChartContainer gpsRecord={gpsRecord} />
+						<ChartContainer gpsRecord={gpsRecord} onPointSelected={setSelectedPointFromChart} />
 					</>
 				) : (
 					<Card sx={{ maxWidth: '400px' }}>

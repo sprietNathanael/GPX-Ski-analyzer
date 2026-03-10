@@ -1,6 +1,8 @@
 import {
+	ActiveElement,
 	ChartData,
 	ChartDataset,
+	ChartEvent,
 	Chart as ChartJS,
 	Legend,
 	LinearScale,
@@ -10,8 +12,9 @@ import {
 	Tooltip,
 } from 'chart.js';
 import 'chartjs-adapter-dayjs-4';
+import { Point } from 'models';
 import GPSRecord from 'models/Record';
-import { useMemo } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import LinesOnHover from './Plugins/LinesOnHover';
 
@@ -19,9 +22,22 @@ ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, TimeSc
 
 interface ComponentProps {
 	gpsRecord: GPSRecord;
+	onPointSelected: (pointDate?: Date) => void;
 }
 
-export function ChartContainer(props: ComponentProps) {
+function ChartContainer(props: ComponentProps) {
+	const lastSelectedPointRef = useRef<number | undefined>(undefined);
+
+	const points = useMemo<Point[]>(() => {
+		let res: Point[] = [];
+
+		for (let track of props.gpsRecord.tracks) {
+			res.push(...track.points);
+		}
+
+		return res;
+	}, [props.gpsRecord]);
+
 	const data = useMemo<ChartData<'line'>>(() => {
 		let res: ChartData<'line'> = {
 			labels: [],
@@ -32,11 +48,9 @@ export function ChartContainer(props: ComponentProps) {
 
 		let elevationPoints: number[] = [];
 
-		for (let track of props.gpsRecord.tracks) {
-			for (let point of track.points) {
-				labels.push(point.time);
-				elevationPoints.push(point.computedElevation);
-			}
+		for (let point of points) {
+			labels.push(point.time);
+			elevationPoints.push(point.computedElevation);
 		}
 
 		let elevationData: ChartDataset<'line', number[]> = {
@@ -52,12 +66,32 @@ export function ChartContainer(props: ComponentProps) {
 		res.datasets.push(elevationData);
 
 		return res;
-	}, [props.gpsRecord]);
+	}, [points]);
+
+	function selectPoint(index?: number) {
+		if (lastSelectedPointRef.current !== index) {
+			lastSelectedPointRef.current = index;
+			props.onPointSelected(points[index ?? -1]?.time);
+		}
+	}
+
+	function chartHover(event: ChartEvent, elements: ActiveElement[], chart: ChartJS) {
+		if (elements.length > 0) {
+			selectPoint(elements[0].index);
+		}
+	}
+
+	useEffect(() => {
+		console.log('props changed');
+	}, [props.onPointSelected]);
+
+	console.log('Chart re-rendered');
 
 	return (
 		<Line
 			data={data}
 			options={{
+				onHover: chartHover,
 				scales: {
 					x: { type: 'time' },
 				},
@@ -78,6 +112,9 @@ export function ChartContainer(props: ComponentProps) {
 				},
 			}}
 			plugins={[LinesOnHover]}
+			onMouseLeave={() => selectPoint(undefined)}
 		/>
 	);
 }
+
+export default memo(ChartContainer);
