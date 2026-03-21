@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Button, Grid, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
 import {
 	ActiveElement,
 	ChartData,
@@ -13,10 +13,10 @@ import {
 	Tooltip,
 } from 'chart.js';
 import 'chartjs-adapter-dayjs-4';
-import { Refresh } from 'mdi-material-ui';
+import { Refresh, SquareRounded } from 'mdi-material-ui';
 import { Point } from 'models';
 import GPSRecord from 'models/Record';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { makeStyles } from 'tss-react/mui';
 import LinesOnHover from './Plugins/LinesOnHover';
@@ -33,6 +33,16 @@ export type Selection = {
 	to: number; // index
 };
 
+const dataType = ['speed', 'computedSpeed', 'elevation', 'computedElevation'] as const;
+type DataType = (typeof dataType)[number];
+
+const DATA_CONFIG: Record<DataType, { label: string; color: string }> = {
+	speed: { label: 'Speed', color: 'rgba(0,120,255)' },
+	computedSpeed: { label: 'Computed speed', color: 'rgba(78, 189, 222)' },
+	elevation: { label: 'Elevation', color: 'rgba(207, 14, 14)' },
+	computedElevation: { label: 'Computed elevation', color: 'rgba(235, 87, 87)' },
+};
+
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, TimeScale, LinesOnHover);
 
 interface ComponentProps {
@@ -44,6 +54,8 @@ interface ComponentProps {
 
 function ChartContainer(props: ComponentProps) {
 	const lastSelectedPointRef = useRef<number | undefined>(undefined);
+	const theme = useTheme();
+	const [dataToShow, setDataToShow] = useState<DataType[]>(['computedSpeed', 'computedElevation']);
 
 	const allPoints = useMemo<Point[]>(() => {
 		let res: Point[] = [];
@@ -54,6 +66,24 @@ function ChartContainer(props: ComponentProps) {
 
 		return res;
 	}, [props.gpsRecord]);
+
+	const hasSpeed = useMemo<boolean>(() => allPoints.find((el) => el.speed !== undefined) !== undefined, [allPoints]);
+	const hasElevation = useMemo<boolean>(
+		() => allPoints.find((el) => el.elevation !== undefined) !== undefined,
+		[allPoints]
+	);
+
+	const possibleDataToShow = useMemo<DataType[]>(() => {
+		let res: DataType[] = ['computedElevation', 'computedSpeed'];
+		if (hasElevation) {
+			res.push('elevation');
+		}
+		if (hasSpeed) {
+			res.push('speed');
+		}
+
+		return res;
+	}, [hasElevation, hasSpeed]);
 
 	const pointsToShow = useMemo<Point[]>(() => {
 		let res: Point[] = allPoints;
@@ -72,45 +102,83 @@ function ChartContainer(props: ComponentProps) {
 
 		let labels: Date[] = [];
 
-		let elevationPoints: number[] = [];
+		let computedElevationPoints: number[] = [];
+		let computedSpeedPoints: number[] = [];
 		let speedPoints: number[] = [];
+		let elevationPoints: number[] = [];
 
 		for (let point of pointsToShow) {
 			labels.push(point.time);
-			elevationPoints.push(point.computedElevation);
+			computedElevationPoints.push(point.computedElevation);
+			computedSpeedPoints.push((point.computedSpeed || 0) * 3.6);
+			elevationPoints.push(point.elevation || 0);
 			speedPoints.push((point.speed || 0) * 3.6);
 		}
 
-		let elevationData: ChartDataset<'line', number[]> = {
-			label: 'Elevation',
-			borderColor: 'rgba(255,0,0)',
-			backgroundColor: 'rgba(255,0,0)',
-			data: elevationPoints,
-			borderWidth: 1,
-			pointRadius: 1,
-			yAxisID: 'y',
-			unit: 'm',
-			order: 10,
-		};
+		if (dataToShow.includes('computedElevation')) {
+			let computedElevationData: ChartDataset<'line', number[]> = {
+				label: DATA_CONFIG['computedElevation'].label,
+				borderColor: DATA_CONFIG['computedElevation'].color,
+				backgroundColor: DATA_CONFIG['computedElevation'].color,
+				data: computedElevationPoints,
+				borderWidth: 1,
+				pointRadius: 1,
+				yAxisID: 'y',
+				unit: 'm',
+				order: 10,
+			};
+			res.datasets.push(computedElevationData);
+		}
 
-		let speedData: ChartDataset<'line', number[]> = {
-			label: 'Speed',
-			borderColor: 'rgba(0,120,255)',
-			backgroundColor: 'rgba(0,120,255)',
-			data: speedPoints,
-			borderWidth: 1,
-			pointRadius: 1,
-			yAxisID: 'y1',
-			unit: 'km/h',
-			order: 1,
-		};
+		if (dataToShow.includes('computedSpeed')) {
+			let computedSpeedData: ChartDataset<'line', number[]> = {
+				label: DATA_CONFIG['computedSpeed'].label,
+				borderColor: DATA_CONFIG['computedSpeed'].color,
+				backgroundColor: DATA_CONFIG['computedSpeed'].color,
+				data: computedSpeedPoints,
+				borderWidth: 1,
+				pointRadius: 1,
+				yAxisID: 'y1',
+				unit: 'km/h',
+				order: 1,
+			};
+			res.datasets.push(computedSpeedData);
+		}
+
+		if (dataToShow.includes('elevation')) {
+			let elevationData: ChartDataset<'line', number[]> = {
+				label: DATA_CONFIG['elevation'].label,
+				borderColor: DATA_CONFIG['elevation'].color,
+				backgroundColor: DATA_CONFIG['elevation'].color,
+				data: elevationPoints,
+				borderWidth: 1,
+				pointRadius: 1,
+				yAxisID: 'y',
+				unit: 'm',
+				order: 10,
+			};
+			res.datasets.push(elevationData);
+		}
+
+		if (dataToShow.includes('speed')) {
+			let speedData: ChartDataset<'line', number[]> = {
+				label: DATA_CONFIG['speed'].label,
+				borderColor: DATA_CONFIG['speed'].color,
+				backgroundColor: DATA_CONFIG['speed'].color,
+				data: speedPoints,
+				borderWidth: 1,
+				pointRadius: 1,
+				yAxisID: 'y1',
+				unit: 'km/h',
+				order: 1,
+			};
+			res.datasets.push(speedData);
+		}
 
 		res.labels = labels;
-		res.datasets.push(elevationData);
-		res.datasets.push(speedData);
 
 		return res;
-	}, [pointsToShow]);
+	}, [pointsToShow, dataToShow]);
 
 	function selectPoint(index?: number) {
 		if (lastSelectedPointRef.current !== index) {
@@ -147,6 +215,25 @@ function ChartContainer(props: ComponentProps) {
 	return (
 		<Grid container width={'100%'} spacing={1} flexDirection='column' flexWrap='nowrap'>
 			<Grid container>
+				<ToggleButtonGroup value={dataToShow} onChange={(event, newData) => setDataToShow(newData)}>
+					{possibleDataToShow.map((type) => (
+						<ToggleButton
+							key={`toggleButton-${type}`}
+							value={type}
+							sx={{ textTransform: 'none', padding: '5px' }}
+						>
+							{DATA_CONFIG[type].label}
+							<SquareRounded
+								sx={{
+									color: dataToShow.includes(type)
+										? DATA_CONFIG[type].color
+										: theme.palette.text.disabled,
+								}}
+							/>
+						</ToggleButton>
+					))}
+				</ToggleButtonGroup>
+
 				<Box flexGrow={1} />
 				{props.subSelection && (
 					<Button
@@ -202,6 +289,9 @@ function ChartContainer(props: ComponentProps) {
 							intersect: false,
 						},
 						plugins: {
+							legend: {
+								display: false,
+							},
 							linesOnHover: {
 								vertical: true,
 								horizontal: true,
