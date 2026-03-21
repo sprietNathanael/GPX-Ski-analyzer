@@ -1,4 +1,5 @@
 import { Box, Card, CardContent } from '@mui/material';
+import { Selection } from 'components/Charts/ChartContainer';
 import { useMap } from 'context/MapContext';
 import maplibre, { GeoJSONSource, LngLatBoundsLike } from 'maplibre-gl';
 import { Point } from 'models';
@@ -10,6 +11,7 @@ const BOUNDS_OFFSET = 0.01;
 interface ContainerProps {
 	gpsRecord: GPSRecord;
 	pointToShow?: Point;
+	activeSelection: Selection | null;
 }
 
 export default function MapContainer(props: ContainerProps) {
@@ -37,12 +39,17 @@ export default function MapContainer(props: ContainerProps) {
 				map.addSource(`track-${trackIndex}`, {
 					type: 'geojson',
 					data: {
-						type: 'Feature',
-						geometry: {
-							type: 'LineString',
-							coordinates: track.points.map((el) => el.coords),
-						},
-						properties: {},
+						type: 'FeatureCollection',
+						features: [
+							{
+								type: 'Feature',
+								geometry: {
+									type: 'LineString',
+									coordinates: track.points.map((el) => el.coords),
+								},
+								properties: {},
+							},
+						],
 					},
 				});
 				map.addLayer({
@@ -54,39 +61,83 @@ export default function MapContainer(props: ContainerProps) {
 						'line-cap': 'round',
 					},
 					paint: {
-						'line-color': '#d50e0e',
-						'line-width': 1,
-					},
-				});
-				map.addControl(
-					new maplibre.NavigationControl({
-						visualizePitch: true,
-						visualizeRoll: true,
-						showZoom: true,
-						showCompass: true,
-					})
-				);
-
-				map.addSource('pointToShow', {
-					type: 'geojson',
-					data: {
-						type: 'FeatureCollection',
-						features: [],
-					},
-				});
-
-				map.addLayer({
-					id: 'pointToShow',
-					type: 'circle',
-					source: 'pointToShow',
-					paint: {
-						'circle-radius': 6,
-						'circle-color': '#ff0000',
+						'line-color': [
+							'case',
+							['==', ['get', 'active'], false],
+							'#3a000048', // disabled
+							'#d50e0e', // normal and active
+						],
+						'line-width': [
+							'case',
+							['==', ['get', 'active'], true],
+							3, // active
+							1, // normal and disabled
+						],
 					},
 				});
 			}
+			map.addControl(
+				new maplibre.NavigationControl({
+					visualizePitch: true,
+					visualizeRoll: true,
+					showZoom: true,
+					showCompass: true,
+				})
+			);
+
+			map.addSource('pointToShow', {
+				type: 'geojson',
+				data: {
+					type: 'FeatureCollection',
+					features: [],
+				},
+			});
+
+			map.addLayer({
+				id: 'pointToShow',
+				type: 'circle',
+				source: 'pointToShow',
+				paint: {
+					'circle-radius': 6,
+					'circle-color': '#ff0000',
+				},
+			});
 		}
 	}, [map, containerInit, props.gpsRecord]);
+
+	useEffect(() => {
+		if (map && containerInit && props.gpsRecord) {
+			for (let trackIndex = 0; trackIndex < props.gpsRecord.tracks.length; trackIndex++) {
+				let source: GeoJSONSource | undefined = map.getSource(`track-${trackIndex}`);
+				if (!source) return;
+				let track = props.gpsRecord.tracks[trackIndex];
+				let subTracks: Point[][] = [];
+				if (props.activeSelection) {
+					subTracks = [
+						track.points.slice(0, props.activeSelection.from),
+						track.points.slice(props.activeSelection.from, props.activeSelection.to + 1),
+						track.points.slice(props.activeSelection.to),
+					];
+				} else {
+					subTracks = [track.points];
+				}
+
+				source.setData({
+					type: 'FeatureCollection',
+					features: subTracks.map((subPoints, index) => ({
+						type: 'Feature',
+						geometry: {
+							type: 'LineString',
+							coordinates: subPoints.map((el) => el.coords),
+						},
+						properties: {
+							active: subTracks.length === 3 ? index === 1 : undefined,
+						},
+					})),
+				});
+			}
+		}
+	}, [props.activeSelection, map, containerInit, props.gpsRecord]);
 
 	useEffect(() => {
 		if (map && containerInit) {

@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
-import ChartContainer from 'components/Charts/ChartContainer';
+import ChartContainer, { Selection } from 'components/Charts/ChartContainer';
 import MapContainer from 'components/Map/MapContainer';
 import { MapProvider, useMap } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
@@ -19,6 +19,7 @@ function DashboardPage() {
 	const [gpsRecord, setGpsRecord] = useState<GPSRecord | undefined>(undefined);
 	const [componentIsInit, setComponentIsInit] = useState(false);
 	const [selectedPointFromChart, setSelectedPointFromChart] = useState<Point | undefined>(undefined);
+	const [activeSelection, setActiveSelection] = useState<Selection | null>(null);
 
 	useEffect(() => {
 		if (map && !componentIsInit && gpsRecord) {
@@ -44,6 +45,7 @@ function DashboardPage() {
 		let parsed = parseGPX(fileContent);
 		if (parsed) {
 			let newRecord = await fromGPX(parsed);
+			console.log(newRecord);
 			setGpsRecord(newRecord);
 		}
 		loadingDialog.close();
@@ -53,13 +55,22 @@ function DashboardPage() {
 
 	return (
 		<Container maxWidth='xl' sx={{ flexGrow: 1, paddingBottom: '10px' }}>
-			<Grid container flexDirection='column' alignItems='center'>
+			<Grid container flexDirection='column' alignItems='center' spacing={1}>
 				{gpsRecord ? (
 					<>
 						<Box height={'600px'} width={'100%'}>
-							<MapContainer gpsRecord={gpsRecord} pointToShow={selectedPointFromChart} />
+							<MapContainer
+								gpsRecord={gpsRecord}
+								pointToShow={selectedPointFromChart}
+								activeSelection={activeSelection}
+							/>
 						</Box>
-						<ChartContainer gpsRecord={gpsRecord} onPointSelected={setSelectedPointFromChart} />
+						<ChartContainer
+							gpsRecord={gpsRecord}
+							onPointSelected={setSelectedPointFromChart}
+							onSubSelection={setActiveSelection}
+							subSelection={activeSelection}
+						/>
 					</>
 				) : (
 					<Card sx={{ maxWidth: '400px' }}>
