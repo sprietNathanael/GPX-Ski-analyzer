@@ -115,36 +115,6 @@ function ChartContainer(props: ComponentProps) {
 			speedPoints.push((point.speed || 0) * 3.6);
 		}
 
-		if (dataToShow.includes('computedElevation')) {
-			let computedElevationData: ChartDataset<'line', number[]> = {
-				label: DATA_CONFIG['computedElevation'].label,
-				borderColor: DATA_CONFIG['computedElevation'].color,
-				backgroundColor: DATA_CONFIG['computedElevation'].color,
-				data: computedElevationPoints,
-				borderWidth: 1,
-				pointRadius: 1,
-				yAxisID: 'y',
-				unit: 'm',
-				order: 10,
-			};
-			res.datasets.push(computedElevationData);
-		}
-
-		if (dataToShow.includes('computedSpeed')) {
-			let computedSpeedData: ChartDataset<'line', number[]> = {
-				label: DATA_CONFIG['computedSpeed'].label,
-				borderColor: DATA_CONFIG['computedSpeed'].color,
-				backgroundColor: DATA_CONFIG['computedSpeed'].color,
-				data: computedSpeedPoints,
-				borderWidth: 1,
-				pointRadius: 1,
-				yAxisID: 'y1',
-				unit: 'km/h',
-				order: 1,
-			};
-			res.datasets.push(computedSpeedData);
-		}
-
 		if (dataToShow.includes('elevation')) {
 			let elevationData: ChartDataset<'line', number[]> = {
 				label: DATA_CONFIG['elevation'].label,
@@ -173,6 +143,36 @@ function ChartContainer(props: ComponentProps) {
 				order: 1,
 			};
 			res.datasets.push(speedData);
+		}
+
+		if (dataToShow.includes('computedElevation')) {
+			let computedElevationData: ChartDataset<'line', number[]> = {
+				label: DATA_CONFIG['computedElevation'].label,
+				borderColor: DATA_CONFIG['computedElevation'].color,
+				backgroundColor: DATA_CONFIG['computedElevation'].color,
+				data: computedElevationPoints,
+				borderWidth: 1,
+				pointRadius: 1,
+				yAxisID: 'y',
+				unit: 'm',
+				order: 10,
+			};
+			res.datasets.push(computedElevationData);
+		}
+
+		if (dataToShow.includes('computedSpeed')) {
+			let computedSpeedData: ChartDataset<'line', number[]> = {
+				label: DATA_CONFIG['computedSpeed'].label,
+				borderColor: DATA_CONFIG['computedSpeed'].color,
+				backgroundColor: DATA_CONFIG['computedSpeed'].color,
+				data: computedSpeedPoints,
+				borderWidth: 1,
+				pointRadius: 1,
+				yAxisID: 'y1',
+				unit: 'km/h',
+				order: 1,
+			};
+			res.datasets.push(computedSpeedData);
 		}
 
 		res.labels = labels;

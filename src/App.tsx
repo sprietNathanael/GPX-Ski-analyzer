@@ -1,4 +1,5 @@
 import { CssBaseline, GlobalStyles, Grid } from '@mui/material';
+import Header from 'components/Layout/Header';
 import { ReactNode } from 'react';
 import { Route, Routes } from 'react-router';
 import mainRoutes from 'routes/mainRoutes';
@@ -37,10 +38,12 @@ export default function App() {
 					container
 					direction='column'
 					flexGrow={1}
+					spacing={1}
 					wrap='nowrap'
 					sx={{ overflow: 'hidden', height: '100%', position: 'relative' }}
 					className='slimScrollbar'
 				>
+					<Header />
 					{switchRoutes(mainRoutes)}
 				</Grid>
 			</Grid>
