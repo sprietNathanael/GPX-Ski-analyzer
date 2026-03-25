@@ -1,6 +1,7 @@
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
 import ChartContainer, { Selection } from 'components/Charts/ChartContainer';
 import MapContainer from 'components/Map/MapContainer';
+import TrackDetails from 'components/TrackDetails';
 import { MapProvider, useMap } from 'context/MapContext';
 import { useUtilities } from 'context/UtilityContext';
 import { Upload } from 'mdi-material-ui';
@@ -54,7 +55,7 @@ function DashboardPage() {
 	const { classes } = useStyles();
 
 	return (
-		<Container maxWidth='xl' sx={{ flexGrow: 1, paddingBottom: '10px' }}>
+		<Container sx={{ maxWidth: 'none!important', flexGrow: 1, paddingBottom: '10px' }}>
 			<Grid container flexDirection='column' alignItems='center' spacing={1}>
 				{gpsRecord ? (
 					<>
@@ -65,12 +66,19 @@ function DashboardPage() {
 								activeSelection={activeSelection}
 							/>
 						</Box>
-						<ChartContainer
-							gpsRecord={gpsRecord}
-							onPointSelected={setSelectedPointFromChart}
-							onSubSelection={setActiveSelection}
-							subSelection={activeSelection}
-						/>
+						<Grid container spacing={1} flexWrap='nowrap' sx={{ width: '100%' }}>
+							<Box sx={{ width: '300px' }}>
+								<TrackDetails gpsRecord={gpsRecord} activeSelection={activeSelection} />
+							</Box>
+							<Box flexGrow={1}>
+								<ChartContainer
+									gpsRecord={gpsRecord}
+									onPointSelected={setSelectedPointFromChart}
+									onSubSelection={setActiveSelection}
+									subSelection={activeSelection}
+								/>
+							</Box>
+						</Grid>
 					</>
 				) : (
 					<Card sx={{ maxWidth: '400px' }}>

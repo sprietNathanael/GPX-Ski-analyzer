@@ -73,7 +73,7 @@ export async function getPointElevation([lon, lat]: [number, number]) {
 }
 
 // Result is in m
-function haversineDistance([lon1, lat1]: [number, number], [lon2, lat2]: [number, number]) {
+export function haversineDistance([lon1, lat1]: [number, number], [lon2, lat2]: [number, number]) {
 	const R = 6371000; // meters
 
 	const toRad = (d: number) => (d * Math.PI) / 180;
@@ -88,13 +88,18 @@ function haversineDistance([lon1, lat1]: [number, number], [lon2, lat2]: [number
 	return R * c;
 }
 
-// Result is in m/s
-export function getSpeed(previousPoint: Point, currentPoint: Point) {
+export function getDist3D(previousPoint: Point, currentPoint: Point) {
 	let distXY = haversineDistance(previousPoint.coords, currentPoint.coords);
 	let distZ =
 		(currentPoint.elevation || currentPoint.computedElevation) -
 		(previousPoint.elevation || previousPoint.computedElevation);
 	let dist3D = Math.sqrt(distXY ** 2 + distZ ** 2);
+	return dist3D;
+}
+
+// Result is in m/s
+export function getSpeed(previousPoint: Point, currentPoint: Point) {
+	let dist3D = getDist3D(previousPoint, currentPoint);
 	let deltaTime = (currentPoint.time.getTime() - previousPoint.time.getTime()) / 1000; // seconds
 
 	return dist3D / deltaTime;

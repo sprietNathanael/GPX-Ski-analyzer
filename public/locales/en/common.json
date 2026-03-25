@@ -27,5 +27,31 @@
 	"pageError": {
 		"text": "An unexpected error occured",
 		"title": "Error"
+	},
+	"trackAnalyzer": {
+		"2Dlength": "Length (horizontal)",
+		"computedElevationAverage": "Average elevation (computed)",
+		"computedElevationMax": "Max elevation (computed)",
+		"computedElevationMin": "Min elevation (computed)",
+		"computedSpeedAverage": "Average speed (computed)",
+		"computedSpeedMax": "Max speed (computed)",
+		"computedSpeedMin": "Min speed (computed)",
+		"downhill": "Downhill elevation",
+		"duration": "Duration",
+		"elevationAverage": "Average elevation",
+		"elevationMax": "Max elevation",
+		"elevationMin": "Min elevation",
+		"length": "Length",
+		"movingDuration": "Duration (moving)",
+		"speedAverage": "Average speed",
+		"speedMax": "Max speed",
+		"speedMin": "Min speed",
+		"tabs": {
+			"elevation": "Elevation",
+			"misc": "Misc",
+			"speed": "Speed"
+		},
+		"title": "Current track",
+		"uphill": "Uphill elevation"
 	}
 }

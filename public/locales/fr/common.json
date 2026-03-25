@@ -27,5 +27,31 @@
 	"pageError": {
 		"text": "Une erreur inattendue s'est produite",
 		"title": "Erreur"
+	},
+	"trackAnalyzer": {
+		"2Dlength": "Longueur (horizontale)",
+		"computedElevationAverage": "Élévation moyenne (calculée)",
+		"computedElevationMax": "Altitude max (calculée)",
+		"computedElevationMin": "Altitude min (calculée)",
+		"computedSpeedAverage": "Vitesse moyenne (calculée)",
+		"computedSpeedMax": "Vitesse max (calculée)",
+		"computedSpeedMin": "Vitesse min (calculée)",
+		"downhill": "Dénivelé négatif",
+		"duration": "Durée",
+		"elevationAverage": "Altitude moyenne",
+		"elevationMax": "Altitude max",
+		"elevationMin": "Altitude min",
+		"length": "Longueur",
+		"movingDuration": "Durée (en mouvement)",
+		"speedAverage": "Vitesse moyenne",
+		"speedMax": "Vitesse max",
+		"speedMin": "Vitesse min",
+		"tabs": {
+			"elevation": "Altitude",
+			"misc": "Divers",
+			"speed": "Vitesse"
+		},
+		"title": "Parcours actuel",
+		"uphill": "Dénivelé positif"
 	}
 }
